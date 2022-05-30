@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SAML.PoC.SP2.Models;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace SAML.PoC.SP2.Controllers
 {
@@ -20,6 +19,17 @@ namespace SAML.PoC.SP2.Controllers
 
         public IActionResult Index()
         {
+            return View();
+        }
+
+        [Authorize]
+        public IActionResult Claims()
+        {
+            // The NameIdentifier
+            var nameIdentifier = User.Claims
+                .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                .Select(c => c.Value).Single();
+
             return View();
         }
 

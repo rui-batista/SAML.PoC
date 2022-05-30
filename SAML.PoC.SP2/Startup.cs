@@ -1,13 +1,13 @@
+using ITfoxtec.Identity.Saml2;
+using ITfoxtec.Identity.Saml2.MvcCore.Configuration;
+using ITfoxtec.Identity.Saml2.Schemas.Metadata;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SAML.PoC.SP2
 {
@@ -24,6 +24,27 @@ namespace SAML.PoC.SP2
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            services.Configure<Saml2Configuration>(Configuration.GetSection("Saml2"));
+
+            services.Configure<Saml2Configuration>(saml2Configuration =>
+            {
+                saml2Configuration.AllowedAudienceUris.Add(saml2Configuration.Issuer);
+
+                var entityDescriptor = new EntityDescriptor();
+                entityDescriptor.ReadIdPSsoDescriptorFromUrl(new Uri(Configuration["Saml2:IdPMetadata"]));
+                if (entityDescriptor.IdPSsoDescriptor != null)
+                {
+                    saml2Configuration.SingleSignOnDestination = entityDescriptor.IdPSsoDescriptor.SingleSignOnServices.First().Location;
+                    saml2Configuration.SignatureValidationCertificates.AddRange(entityDescriptor.IdPSsoDescriptor.SigningCertificates);
+                }
+                else
+                {
+                    throw new Exception("IdPSsoDescriptor not loaded from metadata.");
+                }
+            });
+
+            services.AddSaml2();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +65,7 @@ namespace SAML.PoC.SP2
 
             app.UseRouting();
 
+            app.UseSaml2();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
