@@ -1,0 +1,62 @@
+version: "3.9"
+
+networks:
+    default-network:
+        name: keycloak
+        driver: bridge
+
+services:
+    keycloak:
+        container_name: Keycloak
+        build: .
+        image: keycloak_mysql
+        command: ['start', '--hostname-strict', 'false', '--log-level', 'INFO']
+        environment:
+            KC_DB_URL: jdbc:mysql://database/keycloak
+            KC_DB_USERNAME: keycloak
+            KC_DB_PASSWORD: KeyCloak
+
+            KC_HOSTNAME: localhost
+            PROXY_ADDRESS_FORWARDING: true
+
+            KC_HTTPS_KEY_STORE_FILE: /opt/keycloak/conf/keycloak.keystore
+            KC_HTTPS_KEY_STORE_PASSWORD: password
+
+            KEYCLOAK_ADMIN: admin
+            KEYCLOAK_ADMIN_PASSWORD: admin
+        volumes:
+            - ./keycloak.keystore:/opt/keycloak/conf/keycloak.keystore
+        depends_on:
+            - database
+        ports:
+            - 8443:8443
+            - 8080:8080
+        networks:
+            - default-network
+        healthcheck:
+            test: ["CMD", "curl" ,"--fail", "https://localhost:8443/realms/master"]
+            interval: 30s
+            timeout: 3s
+            retries: 3
+        restart: always
+
+    database:
+        container_name: MySQL
+        image: mysql:8.0
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: keycloak
+            MYSQL_USER: keycloak
+            MYSQL_PASSWORD: KeyCloak
+        volumes:
+            - ./mysql_data:/var/lib/mysql
+        ports:
+            - 13306:3306
+        networks:
+            - default-network
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "--silent"]
+            interval: 10s
+            timeout: 20s
+            retries: 10
+        restart: always
