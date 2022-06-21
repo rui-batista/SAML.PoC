@@ -14,12 +14,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAML.PoC.IdP", "SAML.PoC.Id
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAML.PoC.SP1", "SAML.PoC.SP1\SAML.PoC.SP1.csproj", "{B41DD05F-7A97-4759-8120-7A19156433D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAML.PoC.SP2", "SAML.PoC.SP2\SAML.PoC.SP2.csproj", "{4D5018C2-BF9F-491B-8B62-71E85D325AF4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAML.PoC.SP2", "SAML.PoC.SP2\SAML.PoC.SP2.csproj", "{4D5018C2-BF9F-491B-8B62-71E85D325AF4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Keycloak", "Keycloak", "{C51A656F-ED70-49B7-87D5-666CC174925D}"
 	ProjectSection(SolutionItems) = preProject
 		Keycloak\docker-compose.yml = Keycloak\docker-compose.yml
 		Keycloak\Dockerfile = Keycloak\Dockerfile
+		Keycloak\realm-export.json = Keycloak\realm-export.json
 	EndProjectSection
 EndProject
 Global
