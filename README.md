@@ -2,16 +2,16 @@
 
 This project is a collection of *proof of concept* implementations of SSO with SAML protocols for various versions of .NET frameworks.
 
-The first implementation uses ITfoxtec to implement SAML and follows a post from [morioh.com](https://morioh.com/).
-For this inplementation, project SAML.PoC.IdP plays the role of a (very) simple IdP (Identity Provider) and prject SAML.PoC.SP1 the role of a basic .NET MVC service provider.
+The first implementation uses ITfoxtec to implement SAML and follows a post from [morioh.com](https://morioh.com/p/78ee005c07cc).
+For this inplementation, project SAML.PoC.IdP plays the role of a (very) simple IdP (Identity Provider) and project SAML.PoC.SP1 the role of a basic .NET MVC service provider.
 
-WIP: The second implementation uses Keycloak asa docker composition, with mysql as data store, as Identoty Provider, and the project SAML.PoC.SP2 as a .NET MVC Service Provider.
+WIP: The second implementation uses Keycloak as Identity Provider, and the project SAML.PoC.SP2 as a .NET MVC Service Provider.
 
 TODO: The third implmentation will use WIF (Windows Identity Foundation) to implmement SAML.
 
 TODO: The fourth implmentation will use OWIN (Open Web Interface for .NET) to implement SAML.
 
-This is a Work in Progress that will be updated as I work trough the planned implementations, and I will try to document all configurations and problems found.
+This is a Work in Progress that will be updated as I work trough the planned implementations. I will try to document all configurations and problems found.
 
 ---
 
@@ -177,7 +177,7 @@ command: ['start', '--hostname-strict', 'false', '--log-level', 'INFO',
 '--db-url-host', '192.168.1.1:32775', '--db-username', 'sa', '--db-password', 'DefaultPassword123']
 ```
 
-To use  sql server for Keycloak, XA (extended architecture) must be enabled, a role created and keycloak db user must be added to that role. This next command is a draft to be used in the dockerfile for that, but sice mysql worked immediatelly without extra work, sql server docker configuration will be studied later. I actually managed to have it working, but had to setup XA by hand first.
+To use sql server for Keycloak, XA (extended architecture) must be enabled, a role created and keycloak db user must be added to that role. This next command is a draft to be used in the dockerfile for that, but sice mysql worked immediatelly without extra work, sql server docker configuration will be studied later. I actually managed to have it working, but had to setup XA by hand first.
 
 ```YAML
  command: ['/bin/bash', '-c', 'until /opt/mssql-tools/bin/sqlcmd -S database -U sa -P "DefaultPassword123" -Q "EXEC sp_sqljdbc_xa_install; CREATE DATABASE keycloak; CREATE LOGIN keycloak WITH PASSWORD = ''lol!Iusepasswords''; USE master; EXEC sp_grantdbaccess ''keycloak'', ''keycloak''; EXEC sp_addrolemember [SqlJDBCXAUser], ''keycloak''; USE keycloak; CREATE USER keycloak FOR LOGIN keycloak; EXEC sp_addrolemember N''db_owner'', N''keycloak''" do sleep 5; done']
@@ -243,4 +243,4 @@ That seems enough for the .NET recon the roles annotations in MVC controllers, l
 
 I Created this project to document and report my research about SSO with SAML authentication, in preparation to implement it in a client's old .NET 4.5 application. Collaboration is not expected, but I am always ready to learn more. So if anyone wants to add any knowledge, point in better directions, or even correct some wrongs, feel free to participate.
 
-last updated: 2022-06-21 17:50:37
+last updated: 2022-06-21 17:56:47
