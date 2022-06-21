@@ -1,1 +1,246 @@
-SAML.PoC
+# Introduction
+
+This project is a collection of *proof of concept* implementations of SSO with SAML protocols for various versions of .NET frameworks.
+
+The first implementation uses ITfoxtec to implement SAML and follows a post from [morioh.com](https://morioh.com/).
+For this inplementation, project SAML.PoC.IdP plays the role of a (very) simple IdP (Identity Provider) and prject SAML.PoC.SP1 the role of a basic .NET MVC service provider.
+
+WIP: The second implementation uses Keycloak asa docker composition, with mysql as data store, as Identoty Provider, and the project SAML.PoC.SP2 as a .NET MVC Service Provider.
+
+TODO: The third implmentation will use WIF (Windows Identity Foundation) to implmement SAML.
+
+TODO: The fourth implmentation will use OWIN (Open Web Interface for .NET) to implement SAML.
+
+This is a Work in Progress that will be updated as I work trough the planned implementations, and I will try to document all configurations and problems found.
+
+---
+
+# Reference notes
+
+## ITfoxtec.Identity.Saml2
+
+> https://morioh.com/p/78ee005c07cc
+
+---
+
+## WIF (Windows Identity Foundation)
+> https://stackoverflow.com/questions/15530184/working-with-saml-2-0-in-c-sharp-net-4-5
+>
+> https://docs.microsoft.com/en-us/previous-versions/dotnet/framework/windows-identity-foundation/?redirectedfrom=MSDN
+>
+> WIF implementation example:
+> https://blog.baslijten.com/how-to-setup-a-simple-sts-for-web-application-development/
+>
+> https://github.com/BasLijten/EmbeddedStsSample
+
+---
+
+## OWIN (Open Web Interface for .NET)
+
+> https://docs.microsoft.com/en-us/azure/active-directory/develop/tutorial-v2-asp-webapp
+>
+> https://www.devmedia.com.br/asp-net-identity-como-trabalhar-com-owin/33003
+>
+> https://duo.com/blog/the-beer-drinkers-guide-to-saml
+>
+> https://magicinlogic.blogspot.com/2021/02/how-to-implement-keycloak.html
+
+---
+
+## Custom HTTP Modules
+
+> https://docs.microsoft.com/en-us/previous-versions/aspnet/ms227673(v=vs.100)
+>
+> https://manhng.com/blog/keycloak/
+>
+> https://shami.blog/2021/07/howto-build-a-keycloak/ubuntu/mariadb-cluster-without-multicast-udp/
+
+### testing
+
+> https://developers.redhat.com/blog/2020/11/24/authentication-and-authorization-using-the-keycloak-rest-api#keycloak_connection_using_a_java_application
+>
+>https://developer.okta.com/blog/2020/10/23/how-to-authenticate-with-saml-in-aspnet-core-and-csharp
+
+### OAuth 2.0 & OpenID REST APIs:
+> https://www.baeldung.com/postman-keycloak-endpoints
+
+---
+
+## Keycloak
+
+> https://www.keycloak.org/getting-started/getting-started-docker
+>
+> https://gitlab.pflaeging.net/pflaeging-net-public/keycloak-compose/-/tree/main
+>
+> https://www.frodehus.dev/setting-up-keycloak-with-ms-sql-server-2019/
+>
+> https://github.com/keycloak/keycloak-containers/blob/main/docker-compose-examples/keycloak-mssql.yml
+>
+> https://iamvickyav.medium.com/mysql-init-script-on-docker-compose-e53677102e48
+>
+> https://www.softwaredeveloper.blog/initialize-mssql-in-docker-container
+
+---
+
+### Keycloak using MySQL
+
+```Dockerfile
+#FROM quay.io/keycloak/keycloak:18.0.0 as builder
+FROM quay.io/keycloak/keycloak:latest as builder
+
+ENV KC_HEALTH_ENABLED=true
+ENV KC_METRICS_ENABLED=true
+ENV KC_FEATURES=token-exchange
+ENV KC_DB=mssql
+# Install custom providers
+RUN curl -sL https://github.com/aerogear/keycloak-metrics-spi/releases/download/2.5.3/keycloak-metrics-spi-2.5.3.jar -o /opt/keycloak/providers/keycloak-metrics-spi-2.5.3.jar
+RUN /opt/keycloak/bin/kc.sh build
+
+FROM quay.io/keycloak/keycloak:latest
+COPY --from=builder /opt/keycloak/ /opt/keycloak/
+
+# for demonstration purposes only, please make sure to use proper certificates in production instead
+# RUN keytool -genkeypair -storepass password -storetype PKCS12 -keyalg RSA -keysize 2048 -dname "CN=server" -alias server -ext "SAN:c=DNS:localhost,IP:127.0.0.1" -keystore conf/server.keystore
+
+#ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start"]
+```
+
+```YAML
+version: "3.9"
+
+networks:
+    default-network:
+        name: keycloak
+        driver: bridge
+
+services:
+    keycloak:
+        container_name: Keycloak
+        build: .
+        image: keycloak_mysql
+        command: ['start', '--hostname-strict', 'false', '--log-level', 'INFO']
+        environment:
+            KC_DB_URL: jdbc:mysql://database/keycloak
+            KC_DB_USERNAME: keycloak
+            KC_DB_PASSWORD: KeyCloak
+
+            KC_HOSTNAME: localhost
+            PROXY_ADDRESS_FORWARDING: true
+
+            KC_HTTPS_KEY_STORE_FILE: /opt/keycloak/conf/keycloak.keystore
+            KC_HTTPS_KEY_STORE_PASSWORD: password
+
+            KEYCLOAK_ADMIN: admin
+            KEYCLOAK_ADMIN_PASSWORD: admin
+        volumes:
+            - ./keycloak.keystore:/opt/keycloak/conf/keycloak.keystore
+        depends_on:
+            - database
+        ports:
+            - 8443:8443
+            - 8080:8080
+        networks:
+            - default-network
+        healthcheck:
+            test: ["CMD", "curl" ,"--fail", "https://localhost:8443/realms/master"]
+            interval: 30s
+            timeout: 3s
+            retries: 3
+        restart: always
+
+    database:
+        container_name: MySQL
+        image: mysql:8.0
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: keycloak
+            MYSQL_USER: keycloak
+            MYSQL_PASSWORD: KeyCloak
+        volumes:
+            - ./mysql_data:/var/lib/mysql
+        ports:
+            - 13306:3306
+        networks:
+            - default-network
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "--silent"]
+            interval: 10s
+            timeout: 20s
+            retries: 10
+        restart: always
+```
+---
+### Keycloak using SQL Server
+
+```YAML
+command: ['start', '--hostname-strict', 'false', '--log-level', 'INFO', 
+'--db-url-host', '192.168.1.1:32775', '--db-username', 'sa', '--db-password', 'DefaultPassword123']
+```
+
+To use  sql server for Keycloak, XA (extended architecture) must be enabled, a role created and keycloak db user must be added to that role. This next command is a draft to be used in the dockerfile for that, but sice mysql worked immediatelly without extra work, sql server docker configuration will be studied later. I actually managed to have it working, but had to setup XA by hand first.
+
+```YAML
+ command: ['/bin/bash', '-c', 'until /opt/mssql-tools/bin/sqlcmd -S database -U sa -P "DefaultPassword123" -Q "EXEC sp_sqljdbc_xa_install; CREATE DATABASE keycloak; CREATE LOGIN keycloak WITH PASSWORD = ''lol!Iusepasswords''; USE master; EXEC sp_grantdbaccess ''keycloak'', ''keycloak''; EXEC sp_addrolemember [SqlJDBCXAUser], ''keycloak''; USE keycloak; CREATE USER keycloak FOR LOGIN keycloak; EXEC sp_addrolemember N''db_owner'', N''keycloak''" do sleep 5; done']
+ ```
+---
+
+### Certificates...
+
+> https://stackoverflow.com/questions/44066709/your-connection-is-not-private-neterr-cert-common-name-invalid
+>
+> https://www.feistyduck.com/library/openssl-cookbook/online/
+
+---
+
+### mapping claims to roles
+> https://docs.microsoft.com/en-us/aspnet/core/security/authorization/claims?view=aspnetcore-6.0
+
+Keycloak sets the role claim type as "role" and .NET won't pick that up as a role, needs it to be mapped to ClaimTypes.Role, that will become "http://schemas.microsoft.com/ws/2008/06/identity/claims/role", so in the ClaimsTransform.cs static class, I replaced the line
+
+```CS
+claims.AddRange(incomingPrincipal.Claims);
+```
+
+with
+
+```CS
+foreach (var claim in incomingPrincipal.Claims)
+{
+    if (claim.Type == "Role")
+    {
+        claims.Add(new Claim(ClaimTypes.Role, claim.Value));
+    }
+    else
+    {
+        claims.Add(claim);
+    }
+}
+```
+
+That seems enough for the .NET recon the roles annotations in MVC controllers, like 
+
+```CS
+[Authorize(Roles = "role1,role2")] 
+```
+
+---
+
+### Using Keycloak Groups for role granting
+> Select *Groups*, double click the group, then *Role Mappings*, select the client who has the roles defined, and add the roles you want assigned to this group. Then you add or remove users from the group.
+---
+
+### InvalidSignatureException: Signature is invalid
+
+> https://stackoverflow.com/questions/58603633/invalidsignatureexception-signature-is-invalid
+> https://tkit.dev/2020/05/25/a-potential-fix-for-itfoxtech-identity-saml2-signature-is-invalid-error/
+> https://devforum.okta.com/t/signature-is-invalid-error-on-saml-integration/11931
+> https://keycloak.discourse.group/t/invalid-signature-with-hs256-token/3228/9
+> https://github.com/nextcloud/server/issues/17403
+
+---
+
+# Contribute
+
+I Created this project to document and report my research about SSO with SAML authentication, in preparation to implement it in a client's old .NET 4.5 application. Collaboration is not expected, but I am always ready to learn more. So if anyone wants to add any knowledge, point in better directions, or even correct some wrongs, feel free to participate.
+
+last updated: 2022-06-21 17:50:37
