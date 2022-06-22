@@ -17,9 +17,8 @@ This is a Work in Progress that will be updated as I work trough the planned imp
 
 # Getting started
 
-To get the first PoC started, both the SAML.PoC.IdP and SAML.PoC.SP1 must be running at the same time.
-In Visual Studio, right-click the solution, select the *Set Startup Projects...* option, then check the *Multiple startup projects* bullet and select start in both SAML.PoC.IdP and SAML.PoC.SP1 projects.
-Some pop-ups will prompt you about the SSL and certificate installation and the default browser should open with the index page of both started projects.
+<p>To get the first PoC started, both the SAML.PoC.IdP and SAML.PoC.SP1 must be running at the same time.</p>
+In Visual Studio, right-click the solution, select the *Set Startup Projects...* option, then check the *Multiple startup projects* bullet and select start in both SAML.PoC.IdP and SAML.PoC.SP1 projects. Some pop-ups will prompt you about the SSL and certificate installation and the default browser should open with the index page of both started projects.
 
 # Reference notes
 
@@ -28,6 +27,8 @@ Some pop-ups will prompt you about the SSL and certificate installation and the 
 
 ## ITfoxtec.Identity.Saml2
 
+> https://www.itfoxtec.com/IdentitySaml2
+>
 > https://morioh.com/p/78ee005c07cc
 >
 > https://developer.okta.com/blog/2020/10/23/how-to-authenticate-with-saml-in-aspnet-core-and-csharp
@@ -184,16 +185,12 @@ command: ['start', '--hostname-strict', 'false', '--log-level', 'INFO',
 
 To use sql server for Keycloak, XA (extended architecture) must be enabled, a role created and keycloak db user must be added to that role. This next command is a draft to be used in the dockerfile for that, but sice mysql worked immediatelly without extra work, sql server docker configuration will be studied later. I actually managed to have it working, but had to setup XA by hand first.
 
+> ref:
+> https://www.frodehus.dev/setting-up-keycloak-with-ms-sql-server-2019/
+
 ```YAML
  command: ['/bin/bash', '-c', 'until /opt/mssql-tools/bin/sqlcmd -S database -U sa -P "DefaultPassword123" -Q "EXEC sp_sqljdbc_xa_install; CREATE DATABASE keycloak; CREATE LOGIN keycloak WITH PASSWORD = ''lol!Iusepasswords''; USE master; EXEC sp_grantdbaccess ''keycloak'', ''keycloak''; EXEC sp_addrolemember [SqlJDBCXAUser], ''keycloak''; USE keycloak; CREATE USER keycloak FOR LOGIN keycloak; EXEC sp_addrolemember N''db_owner'', N''keycloak''" do sleep 5; done']
- ```
----
-
-### Certificates...
-
-> https://stackoverflow.com/questions/44066709/your-connection-is-not-private-neterr-cert-common-name-invalid
->
-> https://www.feistyduck.com/library/openssl-cookbook/online/
+```
 
 ---
 
@@ -234,6 +231,14 @@ That seems enough for the .NET recon the roles annotations in MVC controllers, l
 > Select *Groups*, double click the group, then *Role Mappings*, select the client who has the roles defined, and add the roles you want assigned to this group. Then you add or remove users from the group.
 ---
 
+### Certificates...
+
+> https://stackoverflow.com/questions/44066709/your-connection-is-not-private-neterr-cert-common-name-invalid
+>
+> https://www.feistyduck.com/library/openssl-cookbook/online/
+>
+> https://security.stackexchange.com/questions/29425/difference-between-pfx-and-cert-certificates
+
 ### InvalidSignatureException: Signature is invalid
 
 > https://stackoverflow.com/questions/58603633/invalidsignatureexception-signature-is-invalid
@@ -248,4 +253,4 @@ That seems enough for the .NET recon the roles annotations in MVC controllers, l
 
 I Created this project to document and report my research about SSO with SAML authentication, in preparation to implement it in a client's old .NET 4.5 application. Collaboration is not expected, but I am always ready to learn more. So if anyone wants to add any knowledge, point in better directions, or even correct some wrongs, feel free to participate.
 
-last updated: 2022-06-22 12:29:59
+last updated: 2022-06-22 17:06:11
