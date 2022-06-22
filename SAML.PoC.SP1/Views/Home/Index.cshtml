@@ -3,13 +3,12 @@
 }
 <h1>@ViewData["Title"]</h1>
 
-<div class="jumbotron">
-    <h2>Login test</h2>
-    <p class="lead">Click login or go to Secure Page to login.</p>
-</div>
+<p class="lead">Login test with Identity Provider</p>
+<p>Click login or go to Secure Page to login. Make sure that the IdP project is running.</p>
 
-<div class="row">
-    <div class="col-md-12">
+@if (User.Claims.Any())
+{
+    <div class="jumbotron">
         <h2>The users Claims (Iteration on User.Claims)</h2>
         <p>
             @foreach (var claim in User.Claims)
@@ -18,4 +17,4 @@
             }
         </p>
     </div>
-</div>
+}
