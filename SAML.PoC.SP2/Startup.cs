@@ -23,10 +23,7 @@ namespace SAML.PoC.SP2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
-
             services.Configure<Saml2Configuration>(Configuration.GetSection("Saml2"));
-
             services.Configure<Saml2Configuration>(saml2Configuration =>
             {
                 saml2Configuration.AllowedAudienceUris.Add(saml2Configuration.Issuer);
@@ -35,7 +32,9 @@ namespace SAML.PoC.SP2
                 entityDescriptor.ReadIdPSsoDescriptorFromUrl(new Uri(Configuration["Saml2:IdPMetadata"]));
                 if (entityDescriptor.IdPSsoDescriptor != null)
                 {
+                    saml2Configuration.AllowedIssuer = entityDescriptor.EntityId;
                     saml2Configuration.SingleSignOnDestination = entityDescriptor.IdPSsoDescriptor.SingleSignOnServices.First().Location;
+                    saml2Configuration.SingleLogoutDestination = entityDescriptor.IdPSsoDescriptor.SingleLogoutServices.First().Location;
                     saml2Configuration.SignatureValidationCertificates.AddRange(entityDescriptor.IdPSsoDescriptor.SigningCertificates);
                 }
                 else
@@ -45,6 +44,8 @@ namespace SAML.PoC.SP2
             });
 
             services.AddSaml2();
+
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

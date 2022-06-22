@@ -3,13 +3,13 @@
 }
 <h1>@ViewData["Title"]</h1>
 
-<p>Secure page with the authenticated user Claims.</p>
+<p>Secure page for <strong>role2</strong> users.</p>
 
 <div class="jumbotron">
     <div class="col-md-12">
-        <h2>The user's Claims (Iteration on User.Claims)</h2>
+        <h2>The user's Roles (Iteration on User.Claims of type Role)</h2>
         <p>
-            @foreach (var claim in User.Claims)
+            @foreach (var claim in Model.Claims)
             {
                 <strong>@claim.Type</strong> <br /> <span style="padding-left: 10px">Value: @claim.Value</span> <br />
             }

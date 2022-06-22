@@ -8,9 +8,15 @@
     {
         <span class="navbar-text">Hello</span>
     }
+
     <form class="form-inline" asp-controller="Auth" asp-action="Logout">
         <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
     </form>
+
+    <form class="form-inline" asp-controller="Auth" asp-action="SingleLogout">
+        <button type="submit" class="nav-link btn btn-link text-dark">Single Logout</button>
+    </form>
+
 }
 else
 {

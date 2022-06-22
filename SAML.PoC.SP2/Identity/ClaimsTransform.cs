@@ -22,7 +22,19 @@ namespace SAML.PoC.SP2.Identity
             var claims = new List<Claim>();
 
             // All claims
-            claims.AddRange(incomingPrincipal.Claims);
+            //claims.AddRange(incomingPrincipal.Claims);
+
+            foreach (var claim in incomingPrincipal.Claims)
+            {
+                if (claim.Type == "Role")
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, claim.Value));
+                }
+                else
+                {
+                    claims.Add(claim);
+                }
+            }
 
             // Or custom claims
             //claims.AddRange(GetSaml2LogoutClaims(incomingPrincipal));

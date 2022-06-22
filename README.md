@@ -13,7 +13,6 @@ TODO: The fourth implmentation will use OWIN (Open Web Interface for .NET) to im
 
 This is a Work in Progress that will be updated as I work trough the planned implementations. I will try to document all configurations and problems found.
 
----
 
 # Getting started
 
@@ -33,7 +32,6 @@ In Visual Studio, right-click the solution, select the *Set Startup Projects...*
 >
 > https://developer.okta.com/blog/2020/10/23/how-to-authenticate-with-saml-in-aspnet-core-and-csharp
 
----
 
 ## WIF (Windows Identity Foundation)
 > https://stackoverflow.com/questions/15530184/working-with-saml-2-0-in-c-sharp-net-4-5
@@ -43,7 +41,6 @@ In Visual Studio, right-click the solution, select the *Set Startup Projects...*
 > WIF implementation example:
 > https://blog.baslijten.com/how-to-setup-a-simple-sts-for-web-application-development/
 
----
 
 ## OWIN (Open Web Interface for .NET)
 
@@ -55,13 +52,11 @@ In Visual Studio, right-click the solution, select the *Set Startup Projects...*
 >
 > https://github.com/BasLijten/EmbeddedStsSample
 
----
 
 ## Custom HTTP Modules
 
 > https://docs.microsoft.com/en-us/previous-versions/aspnet/ms227673(v=vs.100)
 
----
 
 ## Keycloak
 
@@ -87,7 +82,6 @@ In Visual Studio, right-click the solution, select the *Set Startup Projects...*
 ### testing
 > https://developers.redhat.com/blog/2020/11/24/authentication-and-authorization-using-the-keycloak-rest-api#keycloak_connection_using_a_java_application
 
----
 
 ### Keycloak using MySQL
 
@@ -175,12 +169,14 @@ services:
             retries: 10
         restart: always
 ```
----
+
+
 ### Keycloak using SQL Server
 
 ```YAML
-command: ['start', '--hostname-strict', 'false', '--log-level', 'INFO', 
-'--db-url-host', '192.168.1.1:32775', '--db-username', 'sa', '--db-password', 'DefaultPassword123']
+command: ['start', '--hostname-strict', 'false', '--log-level', 'INFO',
+'--db-url-host', '192.168.1.1:32775', '--db-username', 'sa', '--db-password',
+'DefaultPassword123']
 ```
 
 To use sql server for Keycloak, XA (extended architecture) must be enabled, a role created and keycloak db user must be added to that role. This next command is a draft to be used in the dockerfile for that, but sice mysql worked immediatelly without extra work, sql server docker configuration will be studied later. I actually managed to have it working, but had to setup XA by hand first.
@@ -189,10 +185,13 @@ To use sql server for Keycloak, XA (extended architecture) must be enabled, a ro
 > https://www.frodehus.dev/setting-up-keycloak-with-ms-sql-server-2019/
 
 ```YAML
- command: ['/bin/bash', '-c', 'until /opt/mssql-tools/bin/sqlcmd -S database -U sa -P "DefaultPassword123" -Q "EXEC sp_sqljdbc_xa_install; CREATE DATABASE keycloak; CREATE LOGIN keycloak WITH PASSWORD = ''lol!Iusepasswords''; USE master; EXEC sp_grantdbaccess ''keycloak'', ''keycloak''; EXEC sp_addrolemember [SqlJDBCXAUser], ''keycloak''; USE keycloak; CREATE USER keycloak FOR LOGIN keycloak; EXEC sp_addrolemember N''db_owner'', N''keycloak''" do sleep 5; done']
+ command: ['/bin/bash', '-c', 'until /opt/mssql-tools/bin/sqlcmd -S database -U sa
+ -P "DefaultPassword123" -Q "EXEC sp_sqljdbc_xa_install; CREATE DATABASE keycloak;
+ CREATE LOGIN keycloak WITH PASSWORD = ''lol!Iusepasswords''; USE master; EXEC
+ sp_grantdbaccess ''keycloak'', ''keycloak''; EXEC sp_addrolemember [SqlJDBCXAUser],
+ ''keycloak''; USE keycloak; CREATE USER keycloak FOR LOGIN keycloak; EXEC
+ sp_addrolemember N''db_owner'', N''keycloak''" do sleep 5; done']
 ```
-
----
 
 ### mapping claims to roles
 > https://docs.microsoft.com/en-us/aspnet/core/security/authorization/claims?view=aspnetcore-6.0
@@ -225,11 +224,9 @@ That seems enough for the .NET recon the roles annotations in MVC controllers, l
 [Authorize(Roles = "role1,role2")] 
 ```
 
----
 
 ### Using Keycloak Groups for role granting
 > Select *Groups*, double click the group, then *Role Mappings*, select the client who has the roles defined, and add the roles you want assigned to this group. Then you add or remove users from the group.
----
 
 ### Certificates...
 
@@ -247,10 +244,8 @@ That seems enough for the .NET recon the roles annotations in MVC controllers, l
 > https://keycloak.discourse.group/t/invalid-signature-with-hs256-token/3228/9
 > https://github.com/nextcloud/server/issues/17403
 
----
-
 # Contribute
 
 I Created this project to document and report my research about SSO with SAML authentication, in preparation to implement it in a client's old .NET 4.5 application. Collaboration is not expected, but I am always ready to learn more. So if anyone wants to add any knowledge, point in better directions, or even correct some wrongs, feel free to participate.
 
-last updated: 2022-06-22 17:06:11
+last updated: 2022-06-22 17:22:54

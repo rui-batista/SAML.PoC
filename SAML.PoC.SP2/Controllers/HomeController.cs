@@ -22,15 +22,36 @@ namespace SAML.PoC.SP2.Controllers
             return View();
         }
 
-        [Authorize]
+        [Authorize(Roles = "role1,role2")]
         public IActionResult Claims()
         {
-            // The NameIdentifier
-            var nameIdentifier = User.Claims
-                .Where(c => c.Type == ClaimTypes.NameIdentifier)
-                .Select(c => c.Value).Single();
-
             return View();
+        }
+
+        [Authorize(Roles = "role1")]
+        public IActionResult Role1()
+        {
+            var model = new ClaimsViewModel
+            {
+                Claims = User.Claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                //.Where(c => c.Type == "Role")
+            };
+
+            return View(model);
+        }
+
+        [Authorize(Roles = "role2")]
+        public IActionResult Role2()
+        {
+            var model = new ClaimsViewModel
+            {
+                Claims = User.Claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                //.Where(c => c.Type == "Role")
+            };
+
+            return View(model);
         }
 
         public IActionResult Privacy()
