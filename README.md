@@ -15,11 +15,22 @@ This is a Work in Progress that will be updated as I work trough the planned imp
 
 ---
 
+# Getting started
+
+To get the first PoC started, both the SAML.PoC.IdP and SAML.PoC.SP1 must be running at the same time.
+In Visual Studio, right-click the solution, select the *Set Startup Projects...* option, then check the *Multiple startup projects* bullet and select start in both SAML.PoC.IdP and SAML.PoC.SP1 projects.
+Some pop-ups will prompt you about the SSL and certificate installation and the default browser should open with the index page of both started projects.
+
 # Reference notes
+
+## SAML
+> https://duo.com/blog/the-beer-drinkers-guide-to-saml
 
 ## ITfoxtec.Identity.Saml2
 
 > https://morioh.com/p/78ee005c07cc
+>
+> https://developer.okta.com/blog/2020/10/23/how-to-authenticate-with-saml-in-aspnet-core-and-csharp
 
 ---
 
@@ -30,8 +41,6 @@ This is a Work in Progress that will be updated as I work trough the planned imp
 >
 > WIF implementation example:
 > https://blog.baslijten.com/how-to-setup-a-simple-sts-for-web-application-development/
->
-> https://github.com/BasLijten/EmbeddedStsSample
 
 ---
 
@@ -41,28 +50,15 @@ This is a Work in Progress that will be updated as I work trough the planned imp
 >
 > https://www.devmedia.com.br/asp-net-identity-como-trabalhar-com-owin/33003
 >
-> https://duo.com/blog/the-beer-drinkers-guide-to-saml
->
 > https://magicinlogic.blogspot.com/2021/02/how-to-implement-keycloak.html
+>
+> https://github.com/BasLijten/EmbeddedStsSample
 
 ---
 
 ## Custom HTTP Modules
 
 > https://docs.microsoft.com/en-us/previous-versions/aspnet/ms227673(v=vs.100)
->
-> https://manhng.com/blog/keycloak/
->
-> https://shami.blog/2021/07/howto-build-a-keycloak/ubuntu/mariadb-cluster-without-multicast-udp/
-
-### testing
-
-> https://developers.redhat.com/blog/2020/11/24/authentication-and-authorization-using-the-keycloak-rest-api#keycloak_connection_using_a_java_application
->
->https://developer.okta.com/blog/2020/10/23/how-to-authenticate-with-saml-in-aspnet-core-and-csharp
-
-### OAuth 2.0 & OpenID REST APIs:
-> https://www.baeldung.com/postman-keycloak-endpoints
 
 ---
 
@@ -79,24 +75,33 @@ This is a Work in Progress that will be updated as I work trough the planned imp
 > https://iamvickyav.medium.com/mysql-init-script-on-docker-compose-e53677102e48
 >
 > https://www.softwaredeveloper.blog/initialize-mssql-in-docker-container
+>
+> https://shami.blog/2021/07/howto-build-a-keycloak/ubuntu/mariadb-cluster-without-multicast-udp/
+>
+> https://manhng.com/blog/keycloak/
+
+### OAuth 2.0 & OpenID REST APIs:
+> https://www.baeldung.com/postman-keycloak-endpoints
+
+### testing
+> https://developers.redhat.com/blog/2020/11/24/authentication-and-authorization-using-the-keycloak-rest-api#keycloak_connection_using_a_java_application
 
 ---
 
 ### Keycloak using MySQL
 
 ```Dockerfile
-#FROM quay.io/keycloak/keycloak:18.0.0 as builder
-FROM quay.io/keycloak/keycloak:latest as builder
+FROM quay.io/keycloak/keycloak:18.0.0 as builder
 
 ENV KC_HEALTH_ENABLED=true
 ENV KC_METRICS_ENABLED=true
 ENV KC_FEATURES=token-exchange
-ENV KC_DB=mssql
+ENV KC_DB=mysql
 # Install custom providers
 RUN curl -sL https://github.com/aerogear/keycloak-metrics-spi/releases/download/2.5.3/keycloak-metrics-spi-2.5.3.jar -o /opt/keycloak/providers/keycloak-metrics-spi-2.5.3.jar
 RUN /opt/keycloak/bin/kc.sh build
 
-FROM quay.io/keycloak/keycloak:latest
+FROM quay.io/keycloak/keycloak:18.0.0
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 
 # for demonstration purposes only, please make sure to use proper certificates in production instead
@@ -243,4 +248,4 @@ That seems enough for the .NET recon the roles annotations in MVC controllers, l
 
 I Created this project to document and report my research about SSO with SAML authentication, in preparation to implement it in a client's old .NET 4.5 application. Collaboration is not expected, but I am always ready to learn more. So if anyone wants to add any knowledge, point in better directions, or even correct some wrongs, feel free to participate.
 
-last updated: 2022-06-21 17:56:47
+last updated: 2022-06-22 12:29:59
