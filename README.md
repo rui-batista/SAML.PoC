@@ -2,22 +2,25 @@
 
 This project is a collection of *proof of concept* implementations of SSO with SAML protocols for various versions of .NET frameworks.
 
-The first implementation uses ITfoxtec to implement SAML and follows a post from [morioh.com](https://morioh.com/p/78ee005c07cc).
+1. The first implementation uses ITfoxtec to implement SAML and follows a post from [morioh.com](https://morioh.com/p/78ee005c07cc) and the ITfoxtec samples.
 For this inplementation, project SAML.PoC.IdP plays the role of a (very) simple IdP (Identity Provider) and project SAML.PoC.SP1 the role of a basic .NET MVC service provider.
 
-WIP: The second implementation uses Keycloak as Identity Provider, and the project SAML.PoC.SP2 as a .NET MVC Service Provider.
+2. WIP: The second implementation uses Keycloak as Identity Provider, and the project SAML.PoC.SP2 as a .NET MVC Service Provider.
 
-TODO: The third implmentation will use WIF (Windows Identity Foundation) to implmement SAML.
+3. TODO: The third implmentation will use WIF (Windows Identity Foundation) to implmement SAML.
 
-TODO: The fourth implmentation will use OWIN (Open Web Interface for .NET) to implement SAML.
+4. TODO: The fourth implmentation will use OWIN (Open Web Interface for .NET) to implement SAML.
 
 This is a Work in Progress that will be updated as I work trough the planned implementations. I will try to document all configurations and problems found.
 
 
 # Getting started
 
-<p>To get the first PoC started, both the SAML.PoC.IdP and SAML.PoC.SP1 must be running at the same time.</p>
-In Visual Studio, right-click the solution, select the *Set Startup Projects...* option, then check the *Multiple startup projects* bullet and select start in both SAML.PoC.IdP and SAML.PoC.SP1 projects. Some pop-ups will prompt you about the SSL and certificate installation and the default browser should open with the index page of both started projects.
+To get the first PoC started, both the SAML.PoC.IdP and SAML.PoC.SP1 must be running at the same time.
+
+1. In Visual Studio, right-click the solution, select the *Set Startup Projects...* option, then check the *Multiple startup projects* bullet and select start in both SAML.PoC.IdP and SAML.PoC.SP1 projects. Some pop-ups will prompt you about the SSL and certificate installation and the default browser should open with the index page of both started projects.  
+Pay attention to runtime ports for each project, they are hard-coded in appsettings.json and can differ from the original.
+2. Follow the SP1 index page instructions to authenticate.
 
 # Reference notes
 
@@ -246,6 +249,6 @@ That seems enough for the .NET recon the roles annotations in MVC controllers, l
 
 # Contribute
 
-I Created this project to document and report my research about SSO with SAML authentication, in preparation to implement it in a client's old .NET 4.5 application. Collaboration is not expected, but I am always ready to learn more. So if anyone wants to add any knowledge, point in better directions, or even correct some wrongs, feel free to participate.
+I created this project to document and report my research about SSO with SAML authentication, in preparation to implement it in a client's old .NET 4.5 application. Collaboration is not expected, but I am always ready to learn more. So if anyone wants to add any knowledge, point in better directions, or even correct some wrongs, feel free to participate.
 
-last updated: 2022-06-22 17:22:54
+last updated: 2022-06-23 10:52:52
