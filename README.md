@@ -22,6 +22,14 @@ To get the first PoC started, both the SAML.PoC.IdP and SAML.PoC.SP1 must be run
 Pay attention to runtime ports for each project, they are hard-coded in appsettings.json and can differ from the original.
 2. Follow the SP1 index page instructions to authenticate.
 
+The second PoC, SAML.PoC.SP2. requires a running minimal Keycloak identity provider to work. I used docker to setup and run a keycloak with a mysql database persisted in a filesystem volume. The implementation files can be found in the *Keycloak* folder in teh solution.
+
+To setup keycloak for the SAML.PoC.SP2, a realm named *Teste* must be created. Then you will need to create a client named *mysamlapp* and configured with SAML as *Client Protocol* and Client SAML Endpoint as **https://localhost:5001/Auth/AssertionConsumerService** (the SAML.PoC.SP2 AssertionConsumerService, host and port my be different in you implementation so this might need to be adjusted).
+To avoid configuring signature certificates, go to the client Settings and disable the *Client Signature Required*. I am aware that signing is the cornerstone of SAML security, but the scope of this proof if concept is to implement SAML authentication with .NET applications.
+Two roles, *role1* and *role2* need to be added to this client. The you will need a client with at least one of those roles set.
+I have provided a realm export file in the keycloak folder for convenience. Note that the keycloak will not export password nor secrets, they will saved as '**********'.
+
+
 # Reference notes
 
 ## SAML
@@ -251,4 +259,4 @@ That seems enough for the .NET recon the roles annotations in MVC controllers, l
 
 I created this project to document and report my research about SSO with SAML authentication, in preparation to implement it in a client's old .NET 4.5 application. Collaboration is not expected, but I am always ready to learn more. So if anyone wants to add any knowledge, point in better directions, or even correct some wrongs, feel free to participate.
 
-last updated: 2022-06-23 10:52:52
+last updated: 2022-07-04 12:09:47
