@@ -5,11 +5,11 @@ This project is a collection of *proof of concept* implementations of SSO with S
 1. The first implementation uses ITfoxtec to implement SAML and follows a post from [morioh.com](https://morioh.com/p/78ee005c07cc) and the ITfoxtec samples.
 For this inplementation, project SAML.PoC.IdP plays the role of a (very) simple IdP (Identity Provider) and project SAML.PoC.SP1 the role of a basic .NET MVC service provider.
 
-2. WIP: The second implementation uses Keycloak as Identity Provider, and the project SAML.PoC.SP2 as a .NET MVC Service Provider.
+2. **WIP:** The second implementation uses Keycloak as Identity Provider, and the project SAML.PoC.SP2 as a .NET MVC Service Provider.
 
-3. TODO: The third implmentation will use WIF (Windows Identity Foundation) to implmement SAML.
+3. **TODO:** The third implmentation will use WIF (Windows Identity Foundation) to implmement SAML.
 
-4. TODO: The fourth implmentation will use OWIN (Open Web Interface for .NET) to implement SAML.
+4. **TODO:** The fourth implmentation will use OWIN (Open Web Interface for .NET) to implement SAML.
 
 This is a Work in Progress that will be updated as I work trough the planned implementations. I will try to document all configurations and problems found.
 

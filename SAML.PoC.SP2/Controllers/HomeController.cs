@@ -22,7 +22,7 @@ namespace SAML.PoC.SP2.Controllers
             return View();
         }
 
-        [Authorize(Roles = "role1,role2")]
+        [Authorize]
         public IActionResult Claims()
         {
             return View();
