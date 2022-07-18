@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Keycloak", "Keycloak", "{C5
 		Keycloak\realm-export.json = Keycloak\realm-export.json
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAML.PoC.SP3", "SAML.PoC.SP3\SAML.PoC.SP3.csproj", "{990FD262-7F28-4C84-B9A6-33A71B82BEBF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{4D5018C2-BF9F-491B-8B62-71E85D325AF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D5018C2-BF9F-491B-8B62-71E85D325AF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D5018C2-BF9F-491B-8B62-71E85D325AF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{990FD262-7F28-4C84-B9A6-33A71B82BEBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{990FD262-7F28-4C84-B9A6-33A71B82BEBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{990FD262-7F28-4C84-B9A6-33A71B82BEBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{990FD262-7F28-4C84-B9A6-33A71B82BEBF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
