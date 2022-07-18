@@ -22,23 +22,27 @@ To get the first PoC started, both the `SAML.PoC.IdP` and `SAML.PoC.SP1` must be
 Pay attention to runtime ports for each project, they are hard-coded in appsettings.json and can differ from the original.
 2. Follow the SP1 index page instructions to authenticate.
 
-The second PoC, `SAML.PoC.SP2`. requires a running minimal Keycloak identity provider to work. I used docker to setup and run a keycloak with a mysql database persisted in a filesystem volume. The implementation files can be found in the *Keycloak* folder in teh solution.
+The second PoC, `SAML.PoC.SP2`. requires a running minimal Keycloak identity provider to work. I used docker to setup and run a keycloak instance with a mysql database. The implementation files can be found in the *Keycloak* folder in the solution.
 
 To setup keycloak for the `SAML.PoC.SP2`, a realm named *Teste* must be created. Then you will need to create a client named *mysamlapp* and configured with SAML as *Client Protocol* and Client SAML Endpoint as **https://localhost:5001/Auth/AssertionConsumerService** (the `SAML.PoC.SP2` AssertionConsumerService - host and port my be different in your implementation so this might need to be adjusted).
 
 > To avoid configuring signing certificates, go to the client *Settings* and disable the *Client Signature Required*. I am aware that signing is the cornerstone of SAML security, but the scope of this proof of concept is to research available SAML authentication tools for .NET applications.
 
-Two roles need to be added to this client: *role1* and *role2*. Then you will need a User with at least one of those roles set.
+Two roles need to be added to this client: *role1* and *role2*. Then you will need a User with at least one of those roles set: `SAML.PoC.SP2` has one View that requires *role1* and another that requires *role2*.
 
->I have provided a realm export file in the keycloak folder for convenience. Note that the keycloak will not export passwords nor secrets, Those will saved as '**********'.
+> I have provided a realm export file in the keycloak folder for convenience. Note that keycloak will not export passwords nor secrets, Those will saved as '**********'.
+
+Unsolved issues:
+1. SingleLogout is not working with Keycloak.
+2. Needs a proper Error page or redirect when a user without the required role tries to load a restricted view.
 
 
-# Reference notes
+# Reference links
 
-## SAML
+## What is SAML?
 > https://duo.com/blog/the-beer-drinkers-guide-to-saml
 
-## ITfoxtec.Identity.Saml2
+## ITfoxtec Identity SAML 2
 
 > https://www.itfoxtec.com/IdentitySaml2
 >
@@ -46,15 +50,11 @@ Two roles need to be added to this client: *role1* and *role2*. Then you will ne
 >
 > https://developer.okta.com/blog/2020/10/23/how-to-authenticate-with-saml-in-aspnet-core-and-csharp
 
-
 ## WIF (Windows Identity Foundation)
+
 > https://stackoverflow.com/questions/15530184/working-with-saml-2-0-in-c-sharp-net-4-5
 >
 > https://docs.microsoft.com/en-us/previous-versions/dotnet/framework/windows-identity-foundation/?redirectedfrom=MSDN
->
-> WIF implementation example:
-> https://blog.baslijten.com/how-to-setup-a-simple-sts-for-web-application-development/
-
 
 ## OWIN (Open Web Interface for .NET)
 
@@ -65,6 +65,9 @@ Two roles need to be added to this client: *role1* and *role2*. Then you will ne
 > https://magicinlogic.blogspot.com/2021/02/how-to-implement-keycloak.html
 >
 > https://github.com/BasLijten/EmbeddedStsSample
+>
+> implementation example:
+> https://blog.baslijten.com/how-to-setup-a-simple-sts-for-web-application-development/
 
 
 ## Keycloak
@@ -85,16 +88,15 @@ Two roles need to be added to this client: *role1* and *role2*. Then you will ne
 >
 > https://manhng.com/blog/keycloak/
 
-### OAuth 2.0 & OpenID REST APIs:
+### Keycloak REST API
 > https://www.baeldung.com/postman-keycloak-endpoints
-
-### testing
+>
 > https://developers.redhat.com/blog/2020/11/24/authentication-and-authorization-using-the-keycloak-rest-api#keycloak_connection_using_a_java_application
 
 
 ### Keycloak using SQL Server
 
-To use sql server for Keycloak, XA (extended architecture) must be enabled, then a role must be created and keycloak db user added to that role.
+To use sql server for Keycloak, XA (extended architecture) must be enabled, then a role must be created and the keycloak db user added to that role.
 
 > ref:
 > https://www.frodehus.dev/setting-up-keycloak-with-ms-sql-server-2019/
@@ -109,7 +111,7 @@ Experimenting with the Dockerfile command, trying to get it done but still some 
  sp_addrolemember N''db_owner'', N''keycloak''" do sleep 5; done']
 ```
 
-As keycloack runs out-of-the-box with mysql, I used that one for the docker composition and will explore the use of all other most known database engines at a later time.
+As keycloack runs out-of-the-box with mysql, I used that one for the docker composition and will explore the use of all other well known database engines at a later time.
 
 ### mapping claims to roles
 > https://docs.microsoft.com/en-us/aspnet/core/security/authorization/claims?view=aspnetcore-6.0
@@ -144,7 +146,7 @@ That seems enough for the .NET recon the roles annotations in MVC controllers, l
 
 
 ### Using Keycloak Groups for role granting
-Select *Groups*, double click the group, then *Role Mappings*, select the client who has the roles defined, and add the roles you want assigned to this group. Then you add or remove users from the group.
+Select *Groups*, double click the group, then *Role Mappings*, select the client who has the roles defined and add the roles you want assigned to this group. Then add or remove users from the group.
 
 ### Certificates...
 
@@ -162,8 +164,12 @@ Select *Groups*, double click the group, then *Role Mappings*, select the client
 > https://keycloak.discourse.group/t/invalid-signature-with-hs256-token/3228/9
 > https://github.com/nextcloud/server/issues/17403
 
+
+https://stackoverflow.com/questions/69727838/itfoxtec-saml-2-0-single-logout
+https://stackoverflow.com/questions/44712576/single-sign-out-principle-in-keycloak
+
 # Contribute
 
-I created this project to document and report my research about SSO with SAML authentication, in preparation to implement it in a client's old .NET 4.5 application. Collaboration is not expected, but I am always ready to learn more. So if anyone wants to add any knowledge, point in better directions, or even correct some wrongs, feel free to participate.
+I created this project to document and report my research about SSO with SAML authentication, in preparation to implement it in a client's old .NET 4.5 application. Collaboration is not expected, but I am always ready to learn more. So if anyone wants to add any knowledge, point in better directions or even correct some wrongs, please feel free to participate.
 
-last updated: 2022-07-06 11:46:29
+last updated: 2022-07-18 10:35:37
