@@ -5,9 +5,9 @@ This project is a collection of *proof of concept* implementations of SSO with S
 1. The first implementation uses ITfoxtec to implement SAML and follows a post from [morioh.com](https://morioh.com/p/78ee005c07cc) and the ITfoxtec samples.
 For this inplementation, project `SAML.PoC.IdP` plays the role of a (very) simple IdP (Identity Provider) and project `SAML.PoC.SP1` the role of a basic .NET MVC service provider.
 
-2. **WIP:** The second implementation uses Keycloak as Identity Provider, and the project `SAML.PoC.SP2` as a .NET MVC Service Provider.
+2. The second implementation uses Keycloak as Identity Provider, and the project `SAML.PoC.SP2` as a .NET MVC Service Provider.
 
-3. **TODO:** The third implmentation will use WIF (Windows Identity Foundation) to implmement SAML.
+3. **WIP:** The third implmentation will use WIF (Windows Identity Foundation) to implmement SAML.
 
 4. **TODO:** The fourth implmentation will use OWIN (Open Web Interface for .NET) to implement SAML.
 
@@ -55,6 +55,11 @@ Unsolved issues:
 > https://stackoverflow.com/questions/15530184/working-with-saml-2-0-in-c-sharp-net-4-5
 >
 > https://docs.microsoft.com/en-us/previous-versions/dotnet/framework/windows-identity-foundation/?redirectedfrom=MSDN
+>
+> https://docs.microsoft.com/en-us/previous-versions/dotnet/framework/windows-identity-foundation/how-to-build-claims-aware-aspnet-mvc-web-app-using-wif
+>
+> http://www.primaryobjects.com/2013/08/08/using-single-sign-on-with-windows-identity-foundation-in-mvc-net/
+
 
 ## OWIN (Open Web Interface for .NET)
 
@@ -172,4 +177,4 @@ https://stackoverflow.com/questions/44712576/single-sign-out-principle-in-keyclo
 
 I created this project to document and report my research about SSO with SAML authentication, in preparation to implement it in a client's old .NET 4.5 application. Collaboration is not expected, but I am always ready to learn more. So if anyone wants to add any knowledge, point in better directions or even correct some wrongs, please feel free to participate.
 
-last updated: 2022-07-18 10:35:37
+last updated: 2022-07-18 17:41:54

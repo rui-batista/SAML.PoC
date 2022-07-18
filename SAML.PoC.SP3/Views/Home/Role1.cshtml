@@ -1,0 +1,58 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Secure Page</title>
+</head>
+<body>
+    <p>Claims from ClaimsIdentity</p>
+
+    <div class="jumbotron">
+        <table>
+            <tr>
+                <th>
+                    Claim Type
+                </th>
+                <th>
+                    Claim Value
+                </th>
+                <th>
+                    Value Type
+                </th>
+                <th>
+                    Subject Name
+                </th>
+                <th>
+                    Issuer Name
+                </th>
+            </tr>
+            @foreach (System.Security.Claims.Claim claim in ViewBag.ClaimsIdentity.Claims)
+            {
+                <tr>
+                    <td>
+                        @claim.Type
+                    </td>
+                    <td>
+                        @claim.Value
+                    </td>
+                    <td>
+                        @claim.ValueType
+                    </td>
+                    <td>
+                        @claim.Subject.Name
+                    </td>
+                    <td>
+                        @claim.Issuer
+                    </td>
+                </tr>
+
+            }
+        </table>
+    </div>
+</body>
+</html>
