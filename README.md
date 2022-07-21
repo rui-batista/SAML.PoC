@@ -2,8 +2,7 @@
 
 This project is a collection of *proof of concept* implementations of SSO with SAML protocols for various versions of .NET frameworks.
 
-1. The first implementation uses ITfoxtec to implement SAML and follows a post from [morioh.com](https://morioh.com/p/78ee005c07cc) and the ITfoxtec samples.
-For this inplementation, project `SAML.PoC.IdP` plays the role of a (very) simple IdP (Identity Provider) and project `SAML.PoC.SP1` the role of a basic .NET MVC service provider.
+1. The first implementation uses [ITfoxtec](https://www.itfoxtec.com/IdentitySaml2) to implement SAML and follows a post from [morioh.com](https://morioh.com/p/78ee005c07cc) and the ITfoxtec samples. For this inplementation, project `SAML.PoC.IdP` plays the role of a (very) simple IdP (Identity Provider) and project `SAML.PoC.SP1` the role of a basic .NET MVC SP (service provider).
 
 2. The second implementation uses Keycloak as Identity Provider, and the project `SAML.PoC.SP2` as a .NET MVC Service Provider.
 
@@ -16,12 +15,14 @@ This is a Work in Progress that will be updated as I work trough the planned imp
 
 # Getting started
 
+## SAML.PoC.SP1 and SAML.PoC.IdP
 To get the first PoC started, both the `SAML.PoC.IdP` and `SAML.PoC.SP1` must be running at the same time.
 
 1. In Visual Studio, right-click the solution, select the *Set Startup Projects...* option, then check the *Multiple startup projects* bullet and select start in both `SAML.PoC.IdP` and `SAML.PoC.SP1` projects. Some pop-ups will prompt you about the SSL and certificate installation and the default browser should open with the index page of both started projects.  
 Pay attention to runtime ports for each project, they are hard-coded in appsettings.json and can differ from the original.
 2. Follow the SP1 index page instructions to authenticate.
 
+## SAML.PoC.SP2
 The second PoC, `SAML.PoC.SP2`. requires a running minimal Keycloak identity provider to work. I used docker to setup and run a keycloak instance with a mysql database. The implementation files can be found in the *Keycloak* folder in the solution.
 
 To setup keycloak for the `SAML.PoC.SP2`, a realm named *Teste* must be created. Then you will need to create a client named *mysamlapp* and configured with SAML as *Client Protocol* and Client SAML Endpoint as **https://localhost:5001/Auth/AssertionConsumerService** (the `SAML.PoC.SP2` AssertionConsumerService - host and port my be different in your implementation so this might need to be adjusted).
@@ -33,14 +34,19 @@ Two roles need to be added to this client: *role1* and *role2*. Then you will ne
 > I have provided a realm export file in the keycloak folder for convenience. Note that keycloak will not export passwords nor secrets, Those will saved as '**********'.
 
 Unsolved issues:
-1. SingleLogout is not working with Keycloak.
-2. Needs a proper Error page or redirect when a user without the required role tries to load a restricted view.
+1. SingleLogout is not working with Keycloak;
+2. Needs a proper error page or redirect when a user without the required role tries to load a restricted view;
+3. Implement IDp initiated SSO.
 
+## SAML.PoC.SP3
+This PoC requires the same Keycloak identity provider used with `SAML.PoC.SP2` but uses WIF (Windows Identity Foundation) to implement SAML over a .NET Framework 4.5 ASP.NET MVC application.
 
 # Reference links
 
 ## What is SAML?
 > https://duo.com/blog/the-beer-drinkers-guide-to-saml
+>
+> https://www.samltool.com/validate_logout_req.php
 
 ## ITfoxtec Identity SAML 2
 
@@ -63,6 +69,8 @@ Unsolved issues:
 
 ## OWIN (Open Web Interface for .NET)
 
+> http://owin.org/
+>
 > https://docs.microsoft.com/en-us/azure/active-directory/develop/tutorial-v2-asp-webapp
 >
 > https://www.devmedia.com.br/asp-net-identity-como-trabalhar-com-owin/33003
@@ -73,7 +81,10 @@ Unsolved issues:
 >
 > implementation example:
 > https://blog.baslijten.com/how-to-setup-a-simple-sts-for-web-application-development/
-
+>
+> https://coding.abel.nu/2014/08/kentor-authservices-saml2-owin-middleware-released/
+>
+> https://github.com/Sustainsys/Saml2
 
 ## Keycloak
 
@@ -177,4 +188,4 @@ https://stackoverflow.com/questions/44712576/single-sign-out-principle-in-keyclo
 
 I created this project to document and report my research about SSO with SAML authentication, in preparation to implement it in a client's old .NET 4.5 application. Collaboration is not expected, but I am always ready to learn more. So if anyone wants to add any knowledge, point in better directions or even correct some wrongs, please feel free to participate.
 
-last updated: 2022-07-18 17:41:54
+last updated: 2022-07-21 17:48:47
