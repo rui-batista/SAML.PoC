@@ -18,7 +18,7 @@ This is a Work in Progress that will be updated as I work trough the planned imp
 ## SAML.PoC.SP1 and SAML.PoC.IdP
 To get the first PoC started, both the `SAML.PoC.IdP` and `SAML.PoC.SP1` must be running at the same time.
 
-1. In Visual Studio, right-click the solution, select the *Set Startup Projects...* option, then check the *Multiple startup projects* bullet and select start in both `SAML.PoC.IdP` and `SAML.PoC.SP1` projects. Some pop-ups will prompt you about the SSL and certificate installation and the default browser should open with the index page of both started projects.  
+1. In Visual Studio, right-click the solution, select the *Set Startup Projects...* option, then check the *Multiple startup projects* bullet and select start in both `SAML.PoC.IdP` and `SAML.PoC.SP1` projects. When started, some pop-ups will prompt you about the SSL and certificate installation and the default browser should open with the index view of both projects.  
 Pay attention to runtime ports for each project, they are hard-coded in appsettings.json and can differ from the original.
 2. Follow the SP1 index page instructions to authenticate.
 
@@ -36,7 +36,7 @@ Two roles need to be added to this client: *role1* and *role2*. Then you will ne
 Unsolved issues:
 1. SingleLogout is not working with Keycloak;
 2. Needs a proper error page or redirect when a user without the required role tries to load a restricted view;
-3. Implement IDp initiated SSO.
+3. Implement IdP initiated SSO.
 
 ## SAML.PoC.SP3
 This PoC requires the same Keycloak identity provider used with `SAML.PoC.SP2` but uses WIF (Windows Identity Foundation) to implement SAML over a .NET Framework 4.5 ASP.NET MVC application.
@@ -127,12 +127,12 @@ Experimenting with the Dockerfile command, trying to get it done but still some 
  sp_addrolemember N''db_owner'', N''keycloak''" do sleep 5; done']
 ```
 
-As keycloack runs out-of-the-box with mysql, I used that one for the docker composition and will explore the use of all other well known database engines at a later time.
+As keycloack runs out-of-the-box with mysql, using sql server will be tested at a later time.
 
-### mapping claims to roles
+### mapping role type claims
 > https://docs.microsoft.com/en-us/aspnet/core/security/authorization/claims?view=aspnetcore-6.0
 
-Keycloak sets the role claim type as "role" and .NET won't pick that up as a role, needs it to be mapped to ClaimTypes.Role, that will become "http://schemas.microsoft.com/ws/2008/06/identity/claims/role", so in the ClaimsTransform.cs static class, I replaced the line
+Keycloak sets the role claim type as the string "role" and .NET won't pick that up as a role. For .NET role claims must be of type ClaimTypes.Role, that will become the string "http://schemas.microsoft.com/ws/2008/06/identity/claims/role". In the ClaimsTransform.cs static class, I replaced the line
 
 ```CS
 claims.AddRange(incomingPrincipal.Claims);
@@ -154,17 +154,16 @@ foreach (var claim in incomingPrincipal.Claims)
 }
 ```
 
-That seems enough for the .NET recon the roles annotations in MVC controllers, like 
+That seems enough for the .NET recognize the roles annotations in MVC controllers, like 
 
 ```CS
 [Authorize(Roles = "role1,role2")] 
 ```
 
-
 ### Using Keycloak Groups for role granting
 Select *Groups*, double click the group, then *Role Mappings*, select the client who has the roles defined and add the roles you want assigned to this group. Then add or remove users from the group.
 
-### Certificates...
+### Problems with Certificates...
 
 > https://stackoverflow.com/questions/44066709/your-connection-is-not-private-neterr-cert-common-name-invalid
 >
@@ -172,7 +171,7 @@ Select *Groups*, double click the group, then *Role Mappings*, select the client
 >
 > https://security.stackexchange.com/questions/29425/difference-between-pfx-and-cert-certificates
 
-### InvalidSignatureException: Signature is invalid
+### Error InvalidSignatureException: Signature is invalid
 
 > https://stackoverflow.com/questions/58603633/invalidsignatureexception-signature-is-invalid
 > https://tkit.dev/2020/05/25/a-potential-fix-for-itfoxtech-identity-saml2-signature-is-invalid-error/
@@ -180,12 +179,12 @@ Select *Groups*, double click the group, then *Role Mappings*, select the client
 > https://keycloak.discourse.group/t/invalid-signature-with-hs256-token/3228/9
 > https://github.com/nextcloud/server/issues/17403
 
-
-https://stackoverflow.com/questions/69727838/itfoxtec-saml-2-0-single-logout
-https://stackoverflow.com/questions/44712576/single-sign-out-principle-in-keycloak
+### Error with Single Logout
+> https://stackoverflow.com/questions/69727838/itfoxtec-saml-2-0-single-logout
+> https://stackoverflow.com/questions/44712576/single-sign-out-principle-in-keycloak
 
 # Contribute
 
 I created this project to document and report my research about SSO with SAML authentication, in preparation to implement it in a client's old .NET 4.5 application. Collaboration is not expected, but I am always ready to learn more. So if anyone wants to add any knowledge, point in better directions or even correct some wrongs, please feel free to participate.
 
-last updated: 2022-07-21 17:48:47
+last updated: 2022-07-22 10:12:31
